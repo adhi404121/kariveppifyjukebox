@@ -78,14 +78,21 @@ Preferred communication style: Simple, everyday language.
 ### Environment Variables
 - `SPOTIFY_CLIENT_ID`: Spotify Developer App Client ID (required)
 - `SPOTIFY_CLIENT_SECRET`: Spotify Developer App Client Secret (required)
-- `SPOTIFY_TOKENS_JSON`: JSON string with OAuth tokens (auto-managed, format: `{"accessToken":"...","refreshToken":"...","expiresAt":1234567890}`)
+- `SPOTIFY_TOKENS_JSON`: Optional JSON string with OAuth tokens for pre-loading (format: `{"accessToken":"...","refreshToken":"...","expiresAt":1234567890}`)
 - `NODE_ENV`: development/production mode
 
 ### Vercel Deployment
-For Vercel deployment, set the following environment variables:
+For Vercel deployment, set these environment variables in Vercel Settings → Environment Variables:
 - `SPOTIFY_CLIENT_ID`: Your Spotify Client ID
 - `SPOTIFY_CLIENT_SECRET`: Your Spotify Client Secret
-- `SPOTIFY_TOKENS_JSON`: Optional - can be pre-populated or will be created on first auth (leave empty initially)
+- `SPOTIFY_TOKENS_JSON`: Leave empty initially - tokens are stored in browser localStorage on Vercel
+
+**How token persistence works:**
+- **Replit (Development)**: Tokens stored in memory and `SPOTIFY_TOKENS_JSON` env var
+- **Vercel (Production)**: Tokens stored in browser localStorage (automatically managed by client)
+  - First authentication saves tokens to browser
+  - Tokens persist across page reloads and browser sessions
+  - No server-side token persistence needed
 
 ### Spotify Developer Dashboard Setup
 **IMPORTANT**: For Spotify authentication to work, you must add the redirect URI to your Spotify app settings:

@@ -4,7 +4,7 @@ import { type Server } from "http";
 const SPOTIFY_CLIENT_ID = process.env.SPOTIFY_CLIENT_ID || "";
 const SPOTIFY_CLIENT_SECRET = process.env.SPOTIFY_CLIENT_SECRET || "";
 
-// JSON token storage using environment variables
+// JSON token storage - environment variable based (read-only, set via Vercel/Replit secrets)
 interface TokenData {
   accessToken: string;
   refreshToken: string | null;
@@ -21,17 +21,25 @@ function loadTokens(): TokenData | null {
   }
 }
 
-function saveTokens(accessToken: string, refreshToken: string | null, expiresAt: number) {
-  const tokens: TokenData = {
-    accessToken,
-    refreshToken: refreshToken || loadTokens()?.refreshToken || null,
-    expiresAt,
-  };
-  process.env.SPOTIFY_TOKENS_JSON = JSON.stringify(tokens);
-}
-
 function getStoredTokens() {
   return loadTokens();
+}
+
+// Tokens are stored in SPOTIFY_TOKENS_JSON environment variable
+// This must be set manually in Vercel/Replit settings after first authentication
+// Client sends tokens which are validated but not persisted on server
+function saveTokens(accessToken: string, refreshToken: string | null, expiresAt: number) {
+  // On Vercel: tokens are sent from client (localStorage), validated server-side only
+  // On Replit (dev): update the env var for persistence
+  if (process.env.NODE_ENV !== 'production') {
+    const tokens: TokenData = {
+      accessToken,
+      refreshToken: refreshToken || loadTokens()?.refreshToken || null,
+      expiresAt,
+    };
+    process.env.SPOTIFY_TOKENS_JSON = JSON.stringify(tokens);
+  }
+  // On Vercel: tokens are stored client-side by the client app
 }
 
 async function exchangeCodeForTokens(code: string, redirectUri: string) {
