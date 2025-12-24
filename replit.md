@@ -27,12 +27,9 @@ Preferred communication style: Simple, everyday language.
 - **Development**: Vite dev server with HMR proxied through Express
 
 ### Data Storage
-- **Database**: PostgreSQL with Drizzle ORM
-- **Schema Location**: `shared/schema.ts`
-- **Tables**:
-  - `users`: Basic user authentication (id, username, password)
-  - `spotify_tokens`: Stores Spotify OAuth tokens (access_token, refresh_token, expires_at)
-- **Migrations**: Managed via `drizzle-kit push`
+- **Token Storage**: JSON in environment variables (`SPOTIFY_TOKENS_JSON`)
+- **Format**: `{"accessToken": "...", "refreshToken": "...", "expiresAt": 1234567890}`
+- **Persistence**: Environment variable stored and managed via Vercel/Replit
 
 ### Authentication Flow
 - **Spotify OAuth**: Authorization Code with PKCE flow for secure token exchange
@@ -79,17 +76,16 @@ Preferred communication style: Simple, everyday language.
 - `wouter`: Client-side routing
 
 ### Environment Variables
-- `DATABASE_URL`: PostgreSQL connection string (Replit development database)
-- `NEON_DATABASE_URL`: Neon PostgreSQL connection string (for Vercel production - takes priority over DATABASE_URL if set)
-- `NODE_ENV`: development/production mode
 - `SPOTIFY_CLIENT_ID`: Spotify Developer App Client ID (required)
 - `SPOTIFY_CLIENT_SECRET`: Spotify Developer App Client Secret (required)
+- `SPOTIFY_TOKENS_JSON`: JSON string with OAuth tokens (auto-managed, format: `{"accessToken":"...","refreshToken":"...","expiresAt":1234567890}`)
+- `NODE_ENV`: development/production mode
 
 ### Vercel Deployment
-For Vercel deployment, set the following environment variables in Vercel:
-- `NEON_DATABASE_URL`: Your Neon PostgreSQL connection string
+For Vercel deployment, set the following environment variables:
 - `SPOTIFY_CLIENT_ID`: Your Spotify Client ID
 - `SPOTIFY_CLIENT_SECRET`: Your Spotify Client Secret
+- `SPOTIFY_TOKENS_JSON`: Optional - can be pre-populated or will be created on first auth (leave empty initially)
 
 ### Spotify Developer Dashboard Setup
 **IMPORTANT**: For Spotify authentication to work, you must add the redirect URI to your Spotify app settings:

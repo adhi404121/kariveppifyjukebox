@@ -4,25 +4,34 @@ import { type Server } from "http";
 const SPOTIFY_CLIENT_ID = process.env.SPOTIFY_CLIENT_ID || "";
 const SPOTIFY_CLIENT_SECRET = process.env.SPOTIFY_CLIENT_SECRET || "";
 
-// In-memory token storage
-let storedTokens: {
+// JSON token storage using environment variables
+interface TokenData {
   accessToken: string;
   refreshToken: string | null;
   expiresAt: number;
-} | null = null;
+}
 
-function getStoredTokens() {
-  return storedTokens;
+function loadTokens(): TokenData | null {
+  try {
+    const tokensJson = process.env.SPOTIFY_TOKENS_JSON;
+    if (!tokensJson) return null;
+    return JSON.parse(tokensJson) as TokenData;
+  } catch {
+    return null;
+  }
 }
 
 function saveTokens(accessToken: string, refreshToken: string | null, expiresAt: number) {
-  const finalRefreshToken = refreshToken || storedTokens?.refreshToken || null;
-  
-  storedTokens = {
+  const tokens: TokenData = {
     accessToken,
-    refreshToken: finalRefreshToken,
+    refreshToken: refreshToken || loadTokens()?.refreshToken || null,
     expiresAt,
   };
+  process.env.SPOTIFY_TOKENS_JSON = JSON.stringify(tokens);
+}
+
+function getStoredTokens() {
+  return loadTokens();
 }
 
 async function exchangeCodeForTokens(code: string, redirectUri: string) {
