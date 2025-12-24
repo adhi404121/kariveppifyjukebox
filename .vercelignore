@@ -1,0 +1,9 @@
+node_modules
+.git
+server
+script
+*.log
+.env
+.env.local
+attached_assets
+.local
