@@ -2,7 +2,6 @@
   "buildCommand": "npm run build:vercel",
   "outputDirectory": "dist/public",
   "framework": null,
-  "nodeVersion": "20.x",
   "functions": {
     "api/**/*.ts": {
       "runtime": "@vercel/node@3.0.0"
